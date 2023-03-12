@@ -1,0 +1,132 @@
+import {
+  Box,
+  Button,
+  Container,
+  Fab,
+  Stack,
+  Typography,
+} from '@pankod/refine-mui';
+import React from 'react';
+import { Steppes } from '../components/main/Steppes';
+
+import background_mobile_scan from '../assets/background_mobile_scan.svg';
+import { Pic } from '../components/main/Pic';
+import { Level } from '../components/main/Level';
+import CheckIcon from '@mui/icons-material/Check';
+import { Scan } from 'components/main/Scan';
+import { NewPic } from 'components/main/NewPic';
+
+export const MainScreen: React.FC = () => {
+  const [activeStep, setActiveStep] = React.useState(0);
+
+  // Control
+
+  const handleNext = () => {
+    // let newSkipped = skipped;
+    // if (isStepSkipped(activeStep)) {
+    //   newSkipped = new Set(newSkipped.values());
+    //   newSkipped.delete(activeStep);
+    // }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+  };
+  const steps = [<Scan />, <Level />, <Pic />, <NewPic />];
+
+  return (
+    <Box
+      component="div"
+      sx={{
+        backgroundImage: `url(${background_mobile_scan})`,
+        backgroundSize: 'cover',
+      }}
+    >
+      <Container
+        component="main"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          // justifyContent: 'center',
+          alignItems: 'center',
+          height: '80vh',
+          mt: '12px',
+        }}
+      >
+        <Steppes activeStep={activeStep} />
+
+        {activeStep === steps.length ? (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>
+              All steps completed - you&apos;re finished
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Box sx={{ flex: '1 1 auto' }} />
+              <Button onClick={handleReset}>Reset</Button>
+            </Box>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Box
+              component="div"
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                position: 'relative',
+                alignItems: 'center',
+                mt: '16px',
+                width: '100%',
+              }}
+            >
+              {steps[activeStep]}
+              {activeStep && (
+                <Box>
+                  <Fab
+                    size="large"
+                    color="primary"
+                    aria-label="next"
+                    sx={{
+                      width: 70,
+                      height: 70,
+                      position: 'absolute',
+                      bottom: -40,
+                      right: '50%',
+                      transform: 'translateX(50%)',
+                      '&:hover': {
+                        backgroundColor: 'primary.main',
+                      },
+                    }}
+                    onClick={handleNext}
+                  >
+                    <CheckIcon fontSize="large" fontWeight="bold" />
+                  </Fab>
+                </Box>
+              )}
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: '1 1 auto' }} />
+
+              <Button onClick={handleNext}>
+                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+          </React.Fragment>
+        )}
+      </Container>
+    </Box>
+  );
+};

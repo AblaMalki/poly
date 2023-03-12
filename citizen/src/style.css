@@ -1,0 +1,11 @@
+/* Custom styles for the marks */
+.slider-mark-100 {
+  background-color: orange;
+}
+
+/* Custom styles for the mark labels */
+.slider-mark-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: '#9E9E9E';
+}
