@@ -1,24 +1,26 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes } = require('sequelize');
 
-const sequelize = require('../db')
- 
-const Typepdc = sequelize.define("type_pdc", {
+const sequelize = require('../db');
 
-   type: {
-      type: DataTypes.STRING,
-      allowNull: true
-   },
-   deleted: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
-   }
+const TypePdc = sequelize.define('type_pdc', {
+  type: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  deleted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 });
 
-sequelize.sync().then(() => {
+sequelize
+  .sync()
+  .then(() => {
     console.log('Types pdc table created successfully!');
- }).catch((error) => {
+  })
+  .catch((error) => {
     console.error('Unable to create table : ', error);
- });
+  });
 
- module.exports = Typepdc
+module.exports = TypePdc;
