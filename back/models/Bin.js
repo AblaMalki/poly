@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
 const Secteur = require('./Secteur');
-const Type_pdc = require('./TypePdc');
+const TypePdc = require('./TypePdc');
 
 const Bin = sequelize.define('bins', {
   srb: {
@@ -47,8 +47,8 @@ const Bin = sequelize.define('bins', {
   },
 });
 
-Type_pdc.hasMany(Bin);
-Bin.belongsTo(Type_pdc);
+TypePdc.hasMany(Bin);
+Bin.belongsTo(TypePdc);
 Secteur.hasMany(Bin);
 Bin.belongsTo(Secteur);
 
