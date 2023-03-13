@@ -15,6 +15,7 @@ import {
   stepConnectorClasses,
   SaveButton,
   Fab,
+  Input,
 } from '@pankod/refine-mui';
 import {
   TaskOutlined,
@@ -32,6 +33,8 @@ import {
   HttpError,
   useShow,
   useList,
+  useCustom,
+  useCustomMutation,
 } from '@pankod/refine-core';
 import {
   useStepsForm,
@@ -147,7 +150,7 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
   });
   const [state, setState] = useState<IState>({
     delay: 100,
-    result: 'No result',
+    result: '1303F0002',
   });
   const handleScan = (dat: string | null) => {
     if (dat) {
@@ -158,14 +161,23 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
   const handleError = (err: Error) => {
     console.error(err);
   };
-  const [scanResult, setScanResult] = useState<string>('');
-  const [activeStep, setActiveStep] = React.useState(0);
-  // const { queryResult } = useShow<IBin>();
-  const { data, isLoading, isError } = useList<IBin, HttpError>({
-    resource: `bins/${state.result}`,
+
+  // const { queryResult } = useShow<IBin>({
+  //   resource: `bins/bin/${state.result}`,
+  // });
+  // const { data, isLoading, isError } = queryResult;
+  // const { data, isLoading, isError } = useList<IBin, HttpError>({
+  //   resource: `bins/bin/${state.result}`,
+  //   // resource: 'bins',
+  // });
+  const apiUrl = useApiUrl();
+  const { data, isLoading } = useCustom<IBin>({
+    url: `${apiUrl}/bins/bin/${state.result}`,
+    method: 'get',
   });
   const binDetails = data?.data;
   console.log(binDetails);
+  const { mutate } = useCustomMutation<IRequest>();
 
   // const handleScan = (data: string | null) => {
   //   if (data) {
@@ -249,9 +261,6 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
     }
   };
 
-  useEffect(() => {
-    setValue('percentage', values);
-  }, [values, setValue]);
   const constraints = {
     // width: 720,
     // height: 330,
@@ -259,6 +268,7 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
   };
   const webcamRef = useRef<Webcam>(null);
   const [url, setUrl] = React.useState('');
+
   const capturePhoto = React.useCallback(async () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     setUrl(imageSrc as string);
@@ -267,7 +277,21 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
   const onUserMedia = (e: any) => {
     console.log(e);
   };
+  useEffect(() => {
+    setValue('percentage', values);
+    setValue('image', url);
+  }, [values, setValue, url]);
 
+  const handleImageChange = (file: File) => {
+    const reader = (readFile: File) =>
+      new Promise<string>((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.onload = () => resolve(fileReader.result as string);
+        fileReader.readAsDataURL(readFile);
+      });
+
+    reader(file).then((result: string) => setUrl(result));
+  };
   const steps = ['Scan', 'Fill Level', 'Pic', 'New Pic'];
   const renderFormByStep = (step: number) => {
     switch (step) {
@@ -443,13 +467,12 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
               boxShadow: '5',
               borderRadius: '32px',
               height: '100%',
-              px: '16px',
-              py: '20px',
+              p: '16px',
             }}
           >
             <Stack
               justifyContent="space-between"
-              spacing={6}
+              spacing={2}
               sx={{
                 position: 'relative',
               }}
@@ -477,13 +500,13 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
                 direction="column"
                 alignItems="center"
                 justifyContent="center"
-                spacing={6}
+                spacing={3}
               >
                 <Stack
                   direction="column"
                   alignItems="center"
                   justifyContent="center"
-                  spacing={3}
+                  spacing={2}
                 >
                   <Box
                     component="div"
@@ -549,7 +572,7 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
               backgroundColor: '#fff',
               boxShadow: '5',
               borderRadius: '32px',
-              height: 'auto',
+              height: '100%',
               px: '16px',
               py: '20px',
             }}
@@ -589,7 +612,7 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
                 <Box
                   component="div"
                   sx={{
-                    width: '100%',
+                    width: '245px',
                     borderRadius: '28px',
                     height: '285px',
                     border: 2,
@@ -597,11 +620,30 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
                     overflow: 'hidden',
                   }}
                 >
+                  <Input
+                    id="image-input"
+                    type="file"
+                    sx={{
+                      display: 'none',
+                    }}
+                  />
+                  <input
+                    type="file"
+                    id="file"
+                    {...register('image')}
+                    name="image"
+                    // value={watch('image')}
+                    accept="image/*"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      handleImageChange(e.target.files![0]);
+                    }}
+                  />
                   {url && (
-                    <div>
+                    <>
                       <img src={url} alt="Screenshot" />
-                    </div>
+                    </>
                   )}
+
                   <Box>
                     <Fab
                       size="medium"
@@ -642,7 +684,7 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
                       backgroundColor: 'primary.main',
                     },
                   }}
-                  onClick={onFinishHandler}
+                  onClick={handleSubmit(onFinishHandler)}
                 >
                   <CheckIcon fontSize="large" fontWeight="bold" />
                 </Fab>
@@ -652,17 +694,37 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
         );
     }
   };
-
+  console.log(typeof binDetails);
   const onFinishHandler = async (data: FieldValues) => {
     await onFinish({
       ...data,
-      binId: 1,
+      binId: binDetails?.id,
       image: url,
       percentage: values,
     });
   };
+  // mutate({
+  //   url: `${apiUrl}/requests`,
+  //   method: 'post',
+  //   values: {
+  //     ...data,
+  //     binId: binDetails?.id,
+  //     image: url,
+  //     percentage: values,
+  //   },
+  // });
   return (
-    <Box>
+    <Box
+      component="div"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignContent: 'center',
+        backgroundImage: `url(${background_mobile_scan})`,
+        backgroundSize: 'cover',
+      }}
+    >
       <Stepper
         alternativeLabel
         activeStep={currentStep}
@@ -692,26 +754,19 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
           );
         })}
       </Stepper>
+
       <Box
-        component="div"
+        component="main"
         sx={{
-          backgroundImage: `url(${background_mobile_scan})`,
-          backgroundSize: 'cover',
+          display: 'flex',
+          flexDirection: 'column',
+          // justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          mt: '12px',
         }}
       >
-        <Box
-          component="main"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            // justifyContent: 'center',
-            alignItems: 'center',
-            height: '80vh',
-            mt: '12px',
-          }}
-        >
-          {renderFormByStep(currentStep)}
-        </Box>
+        {renderFormByStep(currentStep)}
       </Box>
       <>
         {currentStep < steps.length - 1 && (
@@ -733,7 +788,7 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
           </Button>
         )}
         {currentStep === steps.length - 1 && (
-          <SaveButton onClick={onFinishHandler} />
+          <SaveButton onClick={handleSubmit(onFinishHandler)} />
         )}
       </>
     </Box>

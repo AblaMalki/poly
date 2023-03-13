@@ -104,6 +104,7 @@ function App() {
       <GlobalStyles styles={{ html: { WebkitFontSmoothing: 'auto' } }} />
       <RefineSnackbarProvider>
         <Refine
+          // dataProvider={dataProvider('https://polyrec.kbdev.co')}
           dataProvider={dataProvider('http://localhost:3001')}
           notificationProvider={notificationProvider}
           ReadyPage={ReadyPage}
@@ -119,6 +120,7 @@ function App() {
             // },
             {
               name: 'requests',
+              list: MainScreen,
               create: MainScreen,
             },
             // {
@@ -137,7 +139,7 @@ function App() {
           // authProvider={authProvider}
           // LoginPage={Login}
           LoginPage={SplashScreen}
-          DashboardPage={MainScreen}
+          // DashboardPage={MainScreen}
           i18nProvider={i18nProvider}
         />
       </RefineSnackbarProvider>
