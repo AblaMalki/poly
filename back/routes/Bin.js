@@ -6,7 +6,7 @@ const router = Router()
 //const cloudinary = require('cloudinary').v2
 var { config } = require("dotenv");
 const Secteur = require('../models/Secteur');
-const TypePdc = require('../models/Typepdc');
+const TypePdc = require('../models/TypePdc');
 const sequelize = require('../db');
 
 const dev = process.env.NODE_ENV !== "production";
