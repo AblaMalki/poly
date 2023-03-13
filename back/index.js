@@ -13,7 +13,7 @@ const dev = process.env.NODE_ENV !== 'production';
 if (dev) {
   config();
 }
-
+app.use(express.static(__dirname + '/build'));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: true }));
