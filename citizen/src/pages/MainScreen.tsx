@@ -16,12 +16,16 @@ import {
   SaveButton,
   Fab,
   Input,
+  CircularProgress,
 } from '@pankod/refine-mui';
 import {
   TaskOutlined,
   CameraAltOutlined,
   QrCodeOutlined,
 } from '@mui/icons-material';
+
+import background_mobile from '../assets/background_mobile.svg';
+import logo_polyrec from '../assets/logo_polyrec.svg';
 import CachedIcon from '@mui/icons-material/Cached';
 import { IStep } from 'interfaces/common';
 import { ReactComponent as Water } from '../assets/icons/water.svg';
@@ -713,84 +717,169 @@ export const MainScreen: React.FC<IResourceComponentsProps> = () => {
   //     percentage: values,
   //   },
   // });
+  const [currentView, setCurrentView] = useState('SpalshScreen');
+
+  const switchView = (view: string) => {
+    setCurrentView(view);
+  };
+  // SplashScreen
+  const [progress, setProgress] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) =>
+        prevProgress >= 100 ? 0 : prevProgress + 25
+      );
+    }, 800);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+  //////////////////////////////////////
+  const renderView = () => {
+    switch (currentView) {
+      case 'SpalshScreen':
+        return (
+          <Box
+            component="div"
+            sx={{
+              backgroundImage: `url(${background_mobile})`,
+              backgroundSize: 'cover',
+            }}
+          >
+            <Container
+              component="main"
+              maxWidth="xs"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                height: '100vh',
+              }}
+            >
+              <Stack
+                spacing={3}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  mx: 6,
+                }}
+              >
+                <img src={logo_polyrec} alt="Polyrec Logo" />
+                <div>
+                  <CircularProgress
+                    // variant="determinate"
+                    value={progress}
+                    color="primary"
+                    size={60}
+                  />
+                </div>
+              </Stack>
+            </Container>
+          </Box>
+        );
+      case 'MainScreen':
+        return (
+          <div>
+            <h1>Screen 2</h1>
+            <button onClick={() => switchView('screen1')}>
+              Go to Screen 1
+            </button>
+          </div>
+        );
+      default:
+        return (
+          <div>
+            <h1>Default Screen</h1>
+            <button onClick={() => switchView('screen1')}>
+              Go to Screen 1
+            </button>
+          </div>
+        );
+    }
+  };
   return (
-    <Box
-      component="div"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignContent: 'center',
-        backgroundImage: `url(${background_mobile_scan})`,
-        backgroundSize: 'cover',
-      }}
-    >
-      <Stepper
-        alternativeLabel
-        activeStep={currentStep}
-        connector={<ColorlibConnector />}
-        sx={{
-          backgroundColor: '#fff',
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: '10px',
-          boxShadow: '5',
-        }}
-        // style={{ display: 'flex', flexDirection: 'column' }}
-      >
-        {steps.map((label, index) => {
-          const stepProps: { completed?: boolean } = {};
-          const labelProps: {
-            optional?: React.ReactNode;
-          } = {};
+    // <Box
+    //   component="div"
+    //   sx={{
+    //     display: 'flex',
+    //     flexDirection: 'column',
+    //     justifyContent: 'center',
+    //     alignContent: 'center',
+    //     backgroundImage: `url(${background_mobile_scan})`,
+    //     backgroundSize: 'cover',
+    //   }}
+    // >
+    //   <Stepper
+    //     alternativeLabel
+    //     activeStep={currentStep}
+    //     connector={<ColorlibConnector />}
+    //     sx={{
+    //       backgroundColor: '#fff',
+    //       justifyContent: 'center',
+    //       alignItems: 'center',
+    //       borderRadius: '10px',
+    //       boxShadow: '5',
+    //     }}
+    //     // style={{ display: 'flex', flexDirection: 'column' }}
+    //   >
+    //     {steps.map((label, index) => {
+    //       const stepProps: { completed?: boolean } = {};
+    //       const labelProps: {
+    //         optional?: React.ReactNode;
+    //       } = {};
 
-          return (
-            <Step {...stepProps} key={label}>
-              <StepLabel {...labelProps} StepIconComponent={ColorlibStepIcon}>
-                {/* {label} */}
-              </StepLabel>
-              {/* <StepButton onClick={() => gotoStep(index)}>{label}</StepButton> */}
-            </Step>
-          );
-        })}
-      </Stepper>
+    //       return (
+    //         <Step {...stepProps} key={label}>
+    //           <StepLabel {...labelProps} StepIconComponent={ColorlibStepIcon}>
+    //             {/* {label} */}
+    //           </StepLabel>
+    //           {/* <StepButton onClick={() => gotoStep(index)}>{label}</StepButton> */}
+    //         </Step>
+    //       );
+    //     })}
+    //   </Stepper>
 
-      <Box
-        component="main"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          // justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          mt: '12px',
-        }}
-      >
-        {renderFormByStep(currentStep)}
-      </Box>
-      <>
-        {currentStep < steps.length - 1 && (
-          <Button
-            onClick={() => {
-              gotoStep(currentStep + 1);
-            }}
-          >
-            next
-          </Button>
-        )}
-        {currentStep > 0 && (
-          <Button
-            onClick={() => {
-              gotoStep(currentStep - 1);
-            }}
-          >
-            prev
-          </Button>
-        )}
-        {currentStep === steps.length - 1 && (
-          <SaveButton onClick={handleSubmit(onFinishHandler)} />
-        )}
-      </>
-    </Box>
+    //   <Box
+    //     component="main"
+    //     sx={{
+    //       display: 'flex',
+    //       flexDirection: 'column',
+    //       // justifyContent: 'center',
+    //       alignItems: 'center',
+    //       height: '100%',
+    //       mt: '12px',
+    //     }}
+    //   >
+    //     {renderFormByStep(currentStep)}
+    //   </Box>
+    //   <>
+    //     {currentStep < steps.length - 1 && (
+    //       <Button
+    //         onClick={() => {
+    //           gotoStep(currentStep + 1);
+    //         }}
+    //       >
+    //         next
+    //       </Button>
+    //     )}
+    //     {currentStep > 0 && (
+    //       <Button
+    //         onClick={() => {
+    //           gotoStep(currentStep - 1);
+    //         }}
+    //       >
+    //         prev
+    //       </Button>
+    //     )}
+    //     {currentStep === steps.length - 1 && (
+    //       <SaveButton onClick={handleSubmit(onFinishHandler)} />
+    //     )}
+    //   </>
+    // </Box>
+    <div style={{ height: '100vh' }}>{renderView()}</div>
   );
 };

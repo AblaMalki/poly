@@ -138,8 +138,8 @@ function App() {
           routerProvider={routerProvider}
           // authProvider={authProvider}
           // LoginPage={Login}
-          LoginPage={SplashScreen}
-          // DashboardPage={MainScreen}
+          // LoginPage={SplashScreen}
+          // DashboardPage={SplashScreen}
           i18nProvider={i18nProvider}
         />
       </RefineSnackbarProvider>
